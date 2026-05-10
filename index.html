@@ -37,8 +37,6 @@
     content: ''; display: block; height: 5px;
     background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--green), var(--gold-light), var(--gold));
   }
-
-  /* TABS */
   .tabs { display: flex; border-bottom: 1px solid var(--cream-dark); }
   .tab {
     flex: 1; padding: 13px 8px; font-size: 11px; font-weight: 600;
@@ -50,8 +48,6 @@
   .tab.active { color: var(--gold); border-bottom-color: var(--gold); background: rgba(201,151,58,0.04); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
-
-  /* HEADER */
   .header { padding: 24px 28px 18px; text-align: center; border-bottom: 1px solid var(--cream-dark); }
   .bismillah { font-family: 'Amiri', serif; font-size: 22px; color: var(--gold); letter-spacing: 2px; margin-bottom: 8px; opacity: 0.9; }
   .header h1 { font-family: 'Amiri', serif; font-size: 28px; font-weight: 700; color: var(--ink); }
@@ -62,8 +58,6 @@
     font-size: 12px; font-weight: 500; color: #7a6a4a; letter-spacing: 1px; text-transform: uppercase;
   }
   .date-bar span { color: var(--gold); font-weight: 600; }
-
-  /* MISSED BANNER */
   .missed-banner {
     display: none; margin: 14px 20px 0;
     background: #fff8f3; border: 1px solid rgba(185,64,64,0.2);
@@ -71,10 +65,7 @@
     padding: 12px 14px; animation: fadeIn 0.4s ease;
   }
   .missed-banner.visible { display: block; }
-  .missed-banner-title {
-    font-size: 11px; font-weight: 600; color: var(--red);
-    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;
-  }
+  .missed-banner-title { font-size: 11px; font-weight: 600; color: var(--red); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
   .missed-prayer-tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .missed-tag {
     display: flex; align-items: center; gap: 5px;
@@ -83,21 +74,10 @@
     font-size: 12px; font-weight: 500; color: var(--red);
   }
   .missed-tag .arabic-small { font-family: 'Amiri', serif; font-size: 13px; opacity: 0.7; }
-
-  /* PROGRESS */
   .progress-section { padding: 16px 24px 10px; }
-  .progress-label {
-    display: flex; justify-content: space-between;
-    font-size: 11px; font-weight: 500; color: #9a8a6a;
-    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px;
-  }
+  .progress-label { display: flex; justify-content: space-between; font-size: 11px; font-weight: 500; color: #9a8a6a; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
   .progress-bar { height: 6px; background: var(--cream-dark); border-radius: 99px; overflow: hidden; }
-  .progress-fill {
-    height: 100%; background: linear-gradient(90deg, var(--green), var(--green-light));
-    border-radius: 99px; transition: width 0.6s cubic-bezier(.4,0,.2,1); width: 0%;
-  }
-
-  /* PRAYER ITEMS */
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-light)); border-radius: 99px; transition: width 0.6s cubic-bezier(.4,0,.2,1); width: 0%; }
   .prayers-list { padding: 8px 20px 16px; display: flex; flex-direction: column; gap: 6px; }
   .section-label { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #b0a080; padding: 6px 2px 2px; }
   .prayer-item {
@@ -127,22 +107,20 @@
   .prayer-name { font-size: 15px; font-weight: 500; color: var(--ink); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .prayer-item.done .prayer-name { color: var(--green); }
   .prayer-arabic { font-family: 'Amiri', serif; font-size: 14px; color: var(--gold); line-height: 1; margin-top: 1px; opacity: 0.8; }
-  .prayer-time { font-size: 11px; font-weight: 300; color: #aaa; letter-spacing: 0.5px; white-space: nowrap; }
-  .prayer-item.done .prayer-time { color: var(--green-light); }
+  .prayer-time-display { font-size: 11px; font-weight: 500; color: #888; letter-spacing: 0.5px; }
+  .prayer-time-range { font-size: 10px; color: #bbb; letter-spacing: 0.3px; }
+  .prayer-item.done .prayer-time-display { color: var(--green-light); }
   .rakaat-badge { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: var(--cream-dark); color: #9a8a6a; letter-spacing: 0.5px; }
   .prayer-item.done .rakaat-badge { background: rgba(61,107,79,0.12); color: var(--green); }
-
-  /* BUTTONS */
+  .active-prayer { border-color: rgba(201,151,58,0.4) !important; background: rgba(201,151,58,0.04) !important; }
+  .active-prayer::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--gold); border-radius: 0 2px 2px 0; }
   .btn-row { display: flex; gap: 10px; margin: 0 20px 20px; }
   .btn { flex: 1; padding: 11px; border-radius: 4px; font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
   .btn-ghost { border: 1.5px solid var(--cream-dark); background: transparent; color: #9a8a6a; }
   .btn-ghost:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,151,58,0.04); }
-
   .all-done-msg { display: none; text-align: center; padding: 8px 20px 4px; font-size: 13px; font-weight: 500; color: var(--green); letter-spacing: 0.5px; animation: fadeIn 0.5s ease; }
   .all-done-msg.visible { display: block; }
   .footer { text-align: center; padding: 12px 20px 20px; font-family: 'Amiri', serif; font-size: 14px; color: var(--gold); opacity: 0.6; border-top: 1px solid var(--cream-dark); }
-
-  /* MONTHLY PANEL */
   .monthly-panel { padding: 20px; }
   .month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
   .month-nav-btn {
@@ -154,7 +132,6 @@
   .month-title { text-align: center; }
   .month-title-name { font-size: 18px; font-weight: 600; color: var(--ink); }
   .month-title-num { font-size: 11px; color: #b0a080; font-weight: 400; letter-spacing: 1px; margin-top: 2px; }
-
   .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 18px; }
   .stat-box { background: var(--cream-dark); border-radius: 6px; padding: 12px 8px; text-align: center; }
   .stat-num { font-size: 22px; font-weight: 600; color: var(--ink); line-height: 1; }
@@ -162,7 +139,6 @@
   .stat-num.red { color: var(--red); }
   .stat-num.gold { color: var(--gold); }
   .stat-label { font-size: 10px; color: #9a8a6a; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
-
   .grid-section-title { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #b0a080; margin-bottom: 10px; }
   .prayer-grid-header { display: grid; grid-template-columns: 32px repeat(5, 1fr); gap: 3px; margin-bottom: 4px; }
   .grid-header-cell { font-size: 9px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #b0a080; text-align: center; padding: 2px 0; }
@@ -175,9 +151,9 @@
   .grid-day-label.today-label { color: var(--gold); font-weight: 700; }
   .grid-cell { height: 22px; border-radius: 3px; background: var(--cream-dark); display: flex; align-items: center; justify-content: center; }
   .grid-cell.done { background: var(--green); }
+  .grid-cell.qadha-done { background: var(--orange); }
   .grid-cell.missed { background: rgba(185,64,64,0.2); }
   .grid-cell.future { background: transparent; border: 1px dashed rgba(180,160,100,0.2); }
-
   .bar-section { margin-top: 20px; }
   .bar-chart { display: flex; align-items: flex-end; gap: 3px; height: 80px; margin-bottom: 6px; }
   .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; justify-content: flex-end; }
@@ -190,10 +166,10 @@
   .legend { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
   .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #9a8a6a; }
   .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
-
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes checkPop { 0% { transform: scale(0.5); opacity: 0; } 70% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
   .prayer-item.just-done .checkbox svg { animation: checkPop 0.35s cubic-bezier(.4,0,.2,1) forwards; }
+  .time-loading { font-size: 10px; color: #bbb; font-style: italic; }
 </style>
 </head>
 <body>
@@ -210,7 +186,6 @@
     <button class="tab" onclick="switchTab('monthly')">Monthly</button>
   </div>
 
-  <!-- TODAY TAB -->
   <div class="tab-panel active" id="panel-today">
     <div class="missed-banner" id="missedBanner">
       <div class="missed-banner-title">⚠ Missed Prayers — Make Them Up (Qadha)</div>
@@ -230,24 +205,21 @@
     </div>
   </div>
 
-  <!-- MONTHLY TAB -->
   <div class="tab-panel" id="panel-monthly">
     <div class="monthly-panel">
       <div class="month-nav">
         <button class="month-nav-btn" id="prevMonthBtn">&#8249;</button>
         <div class="month-title">
-          <div class="month-title-name" id="monthName">April</div>
-          <div class="month-title-num" id="monthNum">Month 4 · 2026</div>
+          <div class="month-title-name" id="monthName">May</div>
+          <div class="month-title-num" id="monthNum">Month 5 · 2026</div>
         </div>
         <button class="month-nav-btn" id="nextMonthBtn">&#8250;</button>
       </div>
-
       <div class="stats-row">
         <div class="stat-box"><div class="stat-num green" id="statDone">0</div><div class="stat-label">Prayed</div></div>
         <div class="stat-box"><div class="stat-num red" id="statMissed">0</div><div class="stat-label">Missed</div></div>
         <div class="stat-box"><div class="stat-num gold" id="statPct">0%</div><div class="stat-label">Rate</div></div>
       </div>
-
       <div class="grid-section-title">Prayer Grid — Each Day</div>
       <div class="prayer-grid-header">
         <div class="grid-header-cell">Day</div>
@@ -258,13 +230,12 @@
         <div class="grid-header-cell">Isha</div>
       </div>
       <div class="prayer-grid" id="prayerGrid"></div>
-
       <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Prayed</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>On Time</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Qadha Done</div>
         <div class="legend-item"><div class="legend-dot" style="background:rgba(185,64,64,0.3)"></div>Missed</div>
         <div class="legend-item"><div class="legend-dot" style="border:1px dashed rgba(180,160,100,0.4)"></div>Upcoming</div>
       </div>
-
       <div class="bar-section">
         <div class="grid-section-title" style="margin-top:18px">Daily Count Chart</div>
         <div class="bar-chart" id="barChart"></div>
@@ -277,253 +248,438 @@
 </div>
 
 <script>
-  const prayers = [
-    { id: 'fajr',    name: 'Fajr',    arabic: 'الفجر',  time: 'Before Sunrise', rakaat: '2 Rakaat' },
-    { id: 'dhuhr',   name: 'Dhuhr',   arabic: 'الظهر',  time: 'Midday',         rakaat: '4 Rakaat' },
-    { id: 'asr',     name: 'Asr',     arabic: 'العصر',  time: 'Afternoon',      rakaat: '4 Rakaat' },
-    { id: 'maghrib', name: 'Maghrib', arabic: 'المغرب', time: 'After Sunset',   rakaat: '3 Rakaat' },
-    { id: 'isha',    name: 'Isha',    arabic: 'العشاء', time: 'Night',          rakaat: '4 Rakaat' },
-  ];
+// ── Prayer definitions (times fetched from API for Chennai lat/lng) ──
+const PRAYER_IDS = ['fajr','dhuhr','asr','maghrib','isha'];
+const prayers = [
+  { id:'fajr',    name:'Fajr',    arabic:'الفجر',  rakaat:'2 Rakaat', apiKey:'Fajr',    nextKey:'Dhuhr'   },
+  { id:'dhuhr',   name:'Dhuhr',   arabic:'الظهر',  rakaat:'4 Rakaat', apiKey:'Dhuhr',   nextKey:'Asr'     },
+  { id:'asr',     name:'Asr',     arabic:'العصر',  rakaat:'4 Rakaat', apiKey:'Asr',     nextKey:'Maghrib' },
+  { id:'maghrib', name:'Maghrib', arabic:'المغرب', rakaat:'3 Rakaat', apiKey:'Maghrib', nextKey:'Isha'    },
+  { id:'isha',    name:'Isha',    arabic:'العشاء', rakaat:'4 Rakaat', apiKey:'Isha',    nextKey:'Fajr'    },
+];
 
-  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const today  = new Date();
-  let viewYear  = today.getFullYear();
-  let viewMonth = today.getMonth();
+// Chennai coordinates
+const LAT = 13.0827, LNG = 80.2707;
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  const dateKey = d => 'prayers_' + d.toDateString();
-  const todayKey = () => dateKey(today);
-  const load  = k  => { try { return JSON.parse(localStorage.getItem(k)  || '[]'); } catch { return []; } };
-  const save  = (k,v)=>{ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
-  const loadQ = ()  => { try { return JSON.parse(localStorage.getItem('qadha') || '[]'); } catch { return []; } };
-  const saveQ = q   => { try { localStorage.setItem('qadha', JSON.stringify(q)); } catch {} };
+const today    = new Date();
+let viewYear   = today.getFullYear();
+let viewMonth  = today.getMonth();
 
-  let done  = load(todayKey());
-  let qadha = loadQ();
+// Prayer times cache: { 'YYYY-MM-DD': { Fajr:'05:10', Dhuhr:'12:18', ... } }
+let timesCache = {};
+// Today's parsed times: { fajr: {start: Date, end: Date}, ... }
+let todayTimes = {};
 
-  // Check previous days for missed prayers (yesterday only, to avoid false flags)
-  function checkMissed() {
-    for (let i = 1; i <= 2; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dStr  = d.toDateString();
-      const dDone = load(dateKey(d));
-      prayers.forEach(p => {
-        const alreadyQueued = qadha.some(q => q.id === p.id && q.fromDate === dStr);
-        if (!dDone.includes(p.id) && !alreadyQueued) {
-          qadha.push({ id: p.id, fromDate: dStr, madeUp: false });
-        }
-      });
+// ── Storage helpers ──
+const dateKey  = d => 'prayers_'  + d.toDateString();
+const todayKey = () => dateKey(today);
+// Each day stores: { done: [], qadha: [] }
+// done  = prayer ids completed ON TIME
+// qadha = prayer ids completed as qadha (late makeup)
+const loadDay  = k  => { try { const v = localStorage.getItem(k); if(!v) return {done:[],qadha:[]}; const p=JSON.parse(v); return {done:p.done||p||[],qadha:p.qadha||[]}; } catch{return{done:[],qadha:[]};} };
+const saveDay  = (k,v)=>{ try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
+const loadQ    = ()  => { try{return JSON.parse(localStorage.getItem('qadha')||'[]');}catch{return[];} };
+const saveQ    = q   => { try{localStorage.setItem('qadha',JSON.stringify(q));}catch{} };
+
+let dayData = loadDay(todayKey());
+let qadha   = loadQ();
+
+// ── Fetch prayer times from Aladhan API ──
+async function fetchPrayerTimes(date) {
+  const key = fmtDate(date);
+  if (timesCache[key]) return timesCache[key];
+  try {
+    const m = date.getMonth()+1, d = date.getDate(), y = date.getFullYear();
+    const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${LAT}&longitude=${LNG}&method=1`;
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.code === 200) {
+      timesCache[key] = json.data.timings;
+      return timesCache[key];
     }
-    saveQ(qadha);
-  }
+  } catch(e) {}
+  return null;
+}
 
-  function renderBanner() {
-    const pending = qadha.filter(q => !q.madeUp);
-    const banner  = document.getElementById('missedBanner');
-    const tags    = document.getElementById('missedTags');
-    if (!pending.length) { banner.classList.remove('visible'); return; }
-    banner.classList.add('visible');
-    tags.innerHTML = '';
-    const grouped = {};
-    pending.forEach(q => { grouped[q.id] = (grouped[q.id]||0) + 1; });
-    Object.entries(grouped).forEach(([id, cnt]) => {
-      const p = prayers.find(x => x.id === id);
-      const t = document.createElement('div');
-      t.className = 'missed-tag';
-      t.innerHTML = `<span>${p.name}${cnt>1?' ×'+cnt:''}</span><span class="arabic-small">${p.arabic}</span>`;
-      tags.appendChild(t);
+function fmtDate(d) {
+  return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+}
+
+// Parse "HH:MM" (24h) into a Date object for a given date
+function parseTime(dateObj, timeStr) {
+  const [h,m] = timeStr.split(':').map(Number);
+  const dt = new Date(dateObj);
+  dt.setHours(h, m, 0, 0);
+  return dt;
+}
+
+// Convert "HH:MM" 24h to 12h format
+function to12h(timeStr) {
+  if (!timeStr) return '';
+  const [h,m] = timeStr.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12  = h % 12 || 12;
+  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+}
+
+// Build todayTimes: for each prayer, start = prayer time, end = next prayer time
+function buildTodayTimes(timings) {
+  if (!timings) return;
+  prayers.forEach(p => {
+    const startStr = timings[p.apiKey];
+    const endStr   = timings[p.nextKey];
+    if (!startStr) return;
+    const start = parseTime(today, startStr);
+    let end;
+    if (p.id === 'isha') {
+      // Isha ends at midnight
+      end = new Date(today); end.setHours(23,59,59,999);
+    } else {
+      end = parseTime(today, endStr);
+    }
+    todayTimes[p.id] = { start, end, startStr, endStr };
+  });
+}
+
+// Is it currently within this prayer's valid time window?
+function isWithinTime(prayerId) {
+  const t = todayTimes[prayerId];
+  if (!t) return true; // fallback: allow if times not loaded
+  const now = new Date();
+  return now >= t.start && now <= t.end;
+}
+
+// Has this prayer's time window PASSED (i.e. missed)?
+function isPrayerTimePast(prayerId) {
+  const t = todayTimes[prayerId];
+  if (!t) return false;
+  const now = new Date();
+  return now > t.end;
+}
+
+// ── Check previous days for missed prayers ──
+// Only flags a prayer as qadha if: the day's time window has passed AND prayer wasn't done
+function checkMissed() {
+  for (let i = 1; i <= 3; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dStr   = d.toDateString();
+    const dData  = loadDay(dateKey(d));
+    const allDone = [...dData.done, ...dData.qadha];
+    prayers.forEach(p => {
+      const alreadyQ = qadha.some(q => q.id === p.id && q.fromDate === dStr);
+      if (!allDone.includes(p.id) && !alreadyQ) {
+        // Past day — all prayer times have passed
+        qadha.push({ id: p.id, fromDate: dStr, madeUp: false });
+      }
     });
   }
+  // Also check today: prayers whose window has PASSED and weren't done
+  const allDoneToday = [...dayData.done, ...dayData.qadha];
+  prayers.forEach(p => {
+    if (isPrayerTimePast(p.id) && !allDoneToday.includes(p.id)) {
+      const dStr = today.toDateString();
+      const alreadyQ = qadha.some(q => q.id === p.id && q.fromDate === dStr);
+      if (!alreadyQ) {
+        qadha.push({ id: p.id, fromDate: dStr, madeUp: false });
+      }
+    }
+  });
+  saveQ(qadha);
+}
 
-  function checkSvg() {
-    return `<svg width="10" height="8" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  }
+function renderBanner() {
+  const pending = qadha.filter(q => !q.madeUp);
+  const banner  = document.getElementById('missedBanner');
+  const tags    = document.getElementById('missedTags');
+  if (!pending.length) { banner.classList.remove('visible'); return; }
+  banner.classList.add('visible');
+  tags.innerHTML = '';
+  const grouped = {};
+  pending.forEach(q => { grouped[q.id] = (grouped[q.id]||0) + 1; });
+  Object.entries(grouped).forEach(([id, cnt]) => {
+    const p = prayers.find(x => x.id === id);
+    const t = document.createElement('div');
+    t.className = 'missed-tag';
+    t.innerHTML = `<span>${p.name}${cnt>1?' ×'+cnt:''}</span><span class="arabic-small">${p.arabic}</span>`;
+    tags.appendChild(t);
+  });
+}
 
-  function render() {
-    const list = document.getElementById('prayersList');
-    list.innerHTML = '';
+function checkSvg() {
+  return `<svg width="10" height="8" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
 
-    const tl = document.createElement('div');
-    tl.className = 'section-label'; tl.textContent = "Today's Prayers";
-    list.appendChild(tl);
+// ── Render today's prayer list ──
+function render() {
+  const list = document.getElementById('prayersList');
+  list.innerHTML = '';
 
-    prayers.forEach(p => {
-      const isDone = done.includes(p.id);
+  const tl = document.createElement('div');
+  tl.className = 'section-label'; tl.textContent = "Today's Prayers";
+  list.appendChild(tl);
+
+  prayers.forEach(p => {
+    const isDone    = dayData.done.includes(p.id);
+    const isQDone   = dayData.qadha.includes(p.id);
+    const isAnyDone = isDone || isQDone;
+    const isActive  = !isAnyDone && todayTimes[p.id] && isWithinTime(p.id);
+    const isPast    = !isAnyDone && isPrayerTimePast(p.id);
+
+    const t = todayTimes[p.id];
+    const timeDisplay  = t ? to12h(t.startStr) : '<span class="time-loading">Loading...</span>';
+    const timeRange    = t ? `${to12h(t.startStr)} – ${to12h(t.endStr || '')}` : '';
+
+    const item = document.createElement('div');
+    item.className = 'prayer-item' +
+      (isAnyDone ? ' done' : '') +
+      (isActive  ? ' active-prayer' : '');
+
+    item.innerHTML = `
+      <div class="checkbox"><svg width="13" height="10" viewBox="0 0 13 10" fill="none">
+        <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg></div>
+      <div class="prayer-info">
+        <div class="prayer-name">${p.name}${isQDone?'<span class="qadha-badge">Qadha</span>':''}</div>
+        <div class="prayer-arabic">${p.arabic}</div>
+        <div class="prayer-time-display">${timeDisplay}</div>
+        ${timeRange ? `<div class="prayer-time-range">${timeRange}</div>` : ''}
+      </div>
+      <div style="text-align:right">
+        <div class="rakaat-badge">${p.rakaat}</div>
+        ${isActive ? '<div style="font-size:9px;color:var(--gold);margin-top:4px;font-weight:600">● NOW</div>' : ''}
+        ${isPast && !isAnyDone ? '<div style="font-size:9px;color:var(--red);margin-top:4px;font-weight:600">MISSED</div>' : ''}
+      </div>`;
+
+    item.addEventListener('click', () => toggleToday(p.id, item));
+    list.appendChild(item);
+  });
+
+  // Qadha section
+  const pendingQ = qadha.filter(q => !q.madeUp);
+  if (pendingQ.length) {
+    const ql = document.createElement('div');
+    ql.className = 'section-label';
+    ql.style.cssText = 'margin-top:10px;color:var(--orange)';
+    ql.textContent = 'Makeup Prayers (Qadha)';
+    list.appendChild(ql);
+
+    pendingQ.forEach(q => {
+      const p = prayers.find(x => x.id === q.id);
+      const fromD   = new Date(q.fromDate);
+      const dayName = fromD.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
       const item = document.createElement('div');
-      item.className = 'prayer-item' + (isDone ? ' done' : '');
+      item.className = 'prayer-item qadha-item';
       item.innerHTML = `
         <div class="checkbox"><svg width="13" height="10" viewBox="0 0 13 10" fill="none">
           <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg></div>
         <div class="prayer-info">
-          <div class="prayer-name">${p.name}</div>
+          <div class="prayer-name">${p.name} <span class="qadha-badge">Qadha</span></div>
           <div class="prayer-arabic">${p.arabic}</div>
+          <div class="prayer-time-display" style="color:var(--orange)">Missed: ${dayName}</div>
         </div>
         <div style="text-align:right">
-          <div class="prayer-time">${p.time}</div>
-          <div class="rakaat-badge" style="margin-top:4px">${p.rakaat}</div>
+          <div class="rakaat-badge">${p.rakaat}</div>
         </div>`;
+
       item.addEventListener('click', () => {
-        if (done.includes(p.id)) { done = done.filter(d => d !== p.id); item.classList.remove('done','just-done'); }
-        else { done.push(p.id); item.classList.add('done','just-done'); setTimeout(()=>item.classList.remove('just-done'),400); }
-        save(todayKey(), done);
-        updateProgress();
+        item.classList.add('done','just-done');
+        setTimeout(()=>item.classList.remove('just-done'),400);
+        setTimeout(()=>{
+          // Mark this specific qadha entry as made up
+          const idx = qadha.findIndex(x => x.id===q.id && x.fromDate===q.fromDate && !x.madeUp);
+          if (idx !== -1) qadha[idx].madeUp = true;
+
+          // ── FIX 1: Also update the day's storage so monthly grid shows qadha-done ──
+          const fromDData = loadDay(dateKey(fromD));
+          if (!fromDData.qadha.includes(q.id)) {
+            fromDData.qadha.push(q.id);
+            // Remove from missed list if it was there
+            fromDData.done = fromDData.done.filter(x => x !== q.id);
+          }
+          saveDay(dateKey(fromD), fromDData);
+
+          saveQ(qadha);
+          renderBanner();
+          render();
+        }, 700);
       });
       list.appendChild(item);
     });
+  }
 
-    // Qadha section
-    const pendingQ = qadha.filter(q => !q.madeUp);
-    if (pendingQ.length) {
-      const ql = document.createElement('div');
-      ql.className = 'section-label';
-      ql.style.cssText = 'margin-top:10px;color:var(--orange)';
-      ql.textContent = 'Makeup Prayers (Qadha)';
-      list.appendChild(ql);
+  updateProgress();
+}
 
-      pendingQ.forEach(q => {
-        const p = prayers.find(x => x.id === q.id);
-        const fromD   = new Date(q.fromDate);
-        const dayName = fromD.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-        const item = document.createElement('div');
-        item.className = 'prayer-item qadha-item';
-        item.innerHTML = `
-          <div class="checkbox"><svg width="13" height="10" viewBox="0 0 13 10" fill="none">
-            <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg></div>
-          <div class="prayer-info">
-            <div class="prayer-name">${p.name} <span class="qadha-badge">Qadha</span></div>
-            <div class="prayer-arabic">${p.arabic}</div>
-          </div>
-          <div style="text-align:right">
-            <div class="prayer-time">Missed: ${dayName}</div>
-            <div class="rakaat-badge" style="margin-top:4px">${p.rakaat}</div>
-          </div>`;
-        item.addEventListener('click', () => {
-          item.classList.add('done','just-done');
-          setTimeout(()=>item.classList.remove('just-done'),400);
-          setTimeout(()=>{
-            qadha = qadha.filter(x => !(x.id===q.id && x.fromDate===q.fromDate));
-            saveQ(qadha); renderBanner(); render();
-          }, 700);
-        });
-        list.appendChild(item);
-      });
+function toggleToday(id, el) {
+  const inTime = isWithinTime(id);
+  const alreadyDone  = dayData.done.includes(id);
+  const alreadyQadha = dayData.qadha.includes(id);
+
+  if (alreadyDone || alreadyQadha) {
+    // Uncheck
+    dayData.done  = dayData.done.filter(x => x !== id);
+    dayData.qadha = dayData.qadha.filter(x => x !== id);
+    el.classList.remove('done','just-done');
+  } else {
+    // Check — decide if on-time or qadha
+    if (inTime) {
+      dayData.done.push(id);
+    } else {
+      // After prayer time — mark as qadha in today's data
+      dayData.qadha.push(id);
+      // Also remove from pending qadha list for today if it was there
+      const todayStr = today.toDateString();
+      qadha = qadha.map(q =>
+        (q.id === id && q.fromDate === todayStr) ? {...q, madeUp:true} : q
+      );
+      saveQ(qadha);
+    }
+    el.classList.add('done','just-done');
+    setTimeout(()=>el.classList.remove('just-done'),400);
+  }
+  saveDay(todayKey(), dayData);
+  updateProgress();
+  renderBanner();
+  render();
+}
+
+function updateProgress() {
+  const total = dayData.done.length + dayData.qadha.length;
+  document.getElementById('progressFill').style.width = (total/5*100) + '%';
+  document.getElementById('progressText').textContent = total + ' / 5 prayers';
+  const msg = document.getElementById('allDoneMsg');
+  if (total === 5) msg.classList.add('visible'); else msg.classList.remove('visible');
+}
+
+// ── MONTHLY VIEW ──
+function getDaysInMonth(y,m) { return new Date(y, m+1, 0).getDate(); }
+
+function renderMonthly() {
+  const days     = getDaysInMonth(viewYear, viewMonth);
+  const todayDay = (viewYear===today.getFullYear() && viewMonth===today.getMonth()) ? today.getDate() : -1;
+
+  document.getElementById('monthName').textContent = MONTHS[viewMonth];
+  document.getElementById('monthNum').textContent  = 'Month ' + (viewMonth+1) + ' · ' + viewYear;
+
+  let totalDone = 0, totalPossible = 0;
+  const grid    = document.getElementById('prayerGrid');
+  const barWrap = document.getElementById('barChart');
+  grid.innerHTML = ''; barWrap.innerHTML = '';
+
+  for (let day = 1; day <= days; day++) {
+    const d = new Date(viewYear, viewMonth, day);
+    const isFuture = d > today;
+    const isToday  = day === todayDay;
+
+    // ── FIX 1: Load day data with both done and qadha ──
+    let dData;
+    if (isToday) {
+      dData = dayData;
+    } else if (isFuture) {
+      dData = { done:[], qadha:[] };
+    } else {
+      dData = loadDay(dateKey(d));
     }
 
-    updateProgress();
-  }
+    const cnt = dData.done.length + dData.qadha.length;
+    if (!isFuture) { totalDone += cnt; totalPossible += 5; }
 
-  function updateProgress() {
-    const c = done.length;
-    document.getElementById('progressFill').style.width = (c/5*100) + '%';
-    document.getElementById('progressText').textContent = c + ' / 5 prayers';
-    const msg = document.getElementById('allDoneMsg');
-    if (c === 5) msg.classList.add('visible'); else msg.classList.remove('visible');
-  }
+    // Grid row
+    const row = document.createElement('div');
+    row.className = 'grid-row' + (isToday ? ' today-row' : '');
+    const dl = document.createElement('div');
+    dl.className = 'grid-day-label' + (isToday ? ' today-label' : '');
+    dl.textContent = day;
+    row.appendChild(dl);
 
-  // ── MONTHLY ──
-  function getDaysInMonth(y,m) { return new Date(y, m+1, 0).getDate(); }
-
-  function renderMonthly() {
-    const days     = getDaysInMonth(viewYear, viewMonth);
-    const todayDay = (viewYear===today.getFullYear() && viewMonth===today.getMonth()) ? today.getDate() : -1;
-
-    document.getElementById('monthName').textContent = MONTHS[viewMonth];
-    document.getElementById('monthNum').textContent  = 'Month ' + (viewMonth+1) + ' · ' + viewYear;
-
-    let totalDone = 0, totalPossible = 0;
-    const grid    = document.getElementById('prayerGrid');
-    const barWrap = document.getElementById('barChart');
-    grid.innerHTML = ''; barWrap.innerHTML = '';
-
-    for (let day = 1; day <= days; day++) {
-      const d = new Date(viewYear, viewMonth, day);
-      const isFuture = d > today;
-      const isToday  = day === todayDay;
-      const dayDone  = isFuture ? [] : (isToday ? done : load(dateKey(d)));
-      const cnt      = dayDone.length;
-
-      if (!isFuture) { totalDone += cnt; totalPossible += 5; }
-
-      // Grid row
-      const row = document.createElement('div');
-      row.className = 'grid-row' + (isToday ? ' today-row' : '');
-      const dl = document.createElement('div');
-      dl.className = 'grid-day-label' + (isToday ? ' today-label' : '');
-      dl.textContent = day;
-      row.appendChild(dl);
-      prayers.forEach(p => {
-        const cell = document.createElement('div');
-        if (isFuture) {
-          cell.className = 'grid-cell future';
-        } else if (dayDone.includes(p.id)) {
-          cell.className = 'grid-cell done';
-          cell.innerHTML = checkSvg();
-        } else {
-          cell.className = 'grid-cell missed';
-          cell.innerHTML = `<svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 2L8 8M8 2L2 8" stroke="rgba(185,64,64,0.7)" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-        }
-        row.appendChild(cell);
-      });
-      grid.appendChild(row);
-
-      // Bar
-      const bw = document.createElement('div');
-      bw.className = 'bar-wrap';
-      const b = document.createElement('div');
+    prayers.forEach(p => {
+      const cell = document.createElement('div');
       if (isFuture) {
-        b.className = 'bar future-bar';
-        b.style.height = '0%';
+        cell.className = 'grid-cell future';
+      } else if (dData.done.includes(p.id)) {
+        // On-time prayer — green
+        cell.className = 'grid-cell done';
+        cell.innerHTML = checkSvg();
+      } else if (dData.qadha.includes(p.id)) {
+        // Qadha done — orange
+        cell.className = 'grid-cell qadha-done';
+        cell.innerHTML = checkSvg();
       } else {
-        b.className = 'bar' + (cnt===0 ? ' zero' : '') + (isToday ? ' today-bar' : '');
-        b.style.height = Math.max((cnt/5)*100, cnt===0?0:4) + '%';
+        // Missed
+        cell.className = 'grid-cell missed';
+        cell.innerHTML = `<svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 2L8 8M8 2L2 8" stroke="rgba(185,64,64,0.7)" stroke-width="1.8" stroke-linecap="round"/></svg>`;
       }
-      const bl = document.createElement('div');
-      bl.className = 'bar-day-label';
-      bl.textContent = day < 10 ? '0'+day : day;
-      bw.appendChild(b); bw.appendChild(bl);
-      barWrap.appendChild(bw);
-    }
+      row.appendChild(cell);
+    });
+    grid.appendChild(row);
 
-    const missed = totalPossible - totalDone;
-    const pct    = totalPossible > 0 ? Math.round(totalDone/totalPossible*100) : 0;
-    document.getElementById('statDone').textContent   = totalDone;
-    document.getElementById('statMissed').textContent = missed;
-    document.getElementById('statPct').textContent    = pct + '%';
-
-    // Scroll to today row
-    if (todayDay > 0) {
-      setTimeout(()=>{
-        const rows = grid.querySelectorAll('.grid-row');
-        if (rows[todayDay-1]) rows[todayDay-1].scrollIntoView({ block:'center', behavior:'smooth' });
-      }, 120);
+    // Bar chart
+    const bw = document.createElement('div');
+    bw.className = 'bar-wrap';
+    const b = document.createElement('div');
+    if (isFuture) {
+      b.className = 'bar future-bar'; b.style.height = '0%';
+    } else {
+      b.className = 'bar' + (cnt===0?' zero':'') + (isToday?' today-bar':'');
+      b.style.height = Math.max((cnt/5)*100, cnt===0?0:4) + '%';
     }
+    const bl = document.createElement('div');
+    bl.className = 'bar-day-label';
+    bl.textContent = day < 10 ? '0'+day : day;
+    bw.appendChild(b); bw.appendChild(bl);
+    barWrap.appendChild(bw);
   }
 
-  function switchTab(tab) {
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['today','monthly'][i]===tab));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('panel-'+tab).classList.add('active');
-    if (tab === 'monthly') renderMonthly();
+  const missed = totalPossible - totalDone;
+  const pct    = totalPossible > 0 ? Math.round(totalDone/totalPossible*100) : 0;
+  document.getElementById('statDone').textContent   = totalDone;
+  document.getElementById('statMissed').textContent = missed;
+  document.getElementById('statPct').textContent    = pct + '%';
+
+  // Scroll to today
+  if (todayDay > 0) {
+    setTimeout(()=>{
+      const rows = grid.querySelectorAll('.grid-row');
+      if (rows[todayDay-1]) rows[todayDay-1].scrollIntoView({ block:'center', behavior:'smooth' });
+    }, 120);
   }
+}
 
-  document.getElementById('prevMonthBtn').addEventListener('click', ()=>{
-    viewMonth--; if (viewMonth<0){viewMonth=11;viewYear--;} renderMonthly();
-  });
-  document.getElementById('nextMonthBtn').addEventListener('click', ()=>{
-    viewMonth++; if (viewMonth>11){viewMonth=0;viewYear++;} renderMonthly();
-  });
-  document.getElementById('resetBtn').addEventListener('click', ()=>{
-    done=[]; save(todayKey(),[]); render();
-  });
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['today','monthly'][i]===tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  if (tab === 'monthly') renderMonthly();
+}
 
-  // Init
-  document.getElementById('dateText').textContent =
-    today.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('prevMonthBtn').addEventListener('click', ()=>{
+  viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderMonthly();
+});
+document.getElementById('nextMonthBtn').addEventListener('click', ()=>{
+  viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderMonthly();
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  dayData={done:[],qadha:[]}; saveDay(todayKey(),dayData); render();
+});
+
+// Set date text
+document.getElementById('dateText').textContent =
+  today.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+// ── Init: fetch today's prayer times, then start ──
+(async () => {
+  const timings = await fetchPrayerTimes(today);
+  buildTodayTimes(timings);
   checkMissed();
   renderBanner();
   render();
+
+  // Refresh every minute to update active prayer highlight
+  setInterval(()=>{ checkMissed(); renderBanner(); render(); }, 60000);
+})();
 </script>
 </body>
 </html>

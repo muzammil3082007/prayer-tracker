@@ -177,7 +177,7 @@
   <div class="header">
     <div class="bismillah">﷽</div>
     <h1>Daily Prayers</h1>
-    <div class="subtitle">Salah Tracker</div>
+    <div class="subtitle">Salah Tracker (Hanafi)</div>
   </div>
   <div class="date-bar"><span id="dateText">Loading...</span></div>
 
@@ -248,7 +248,6 @@
 </div>
 
 <script>
-// ── Prayer definitions ──
 const PRAYER_IDS = ['fajr','dhuhr','asr','maghrib','isha'];
 const prayers = [
   { id:'fajr',    name:'Fajr',    arabic:'الفجر',  rakaat:'2 Rakaat', apiKey:'Fajr' },
@@ -258,7 +257,10 @@ const prayers = [
   { id:'isha',    name:'Isha',    arabic:'العشاء', rakaat:'4 Rakaat', apiKey:'Isha' },
 ];
 
+// Fallback to Chennai coordinates
+let currentLat = 13.0827, currentLng = 80.2707;
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
 const today    = new Date();
 let viewYear   = today.getFullYear();
 let viewMonth  = today.getMonth();
@@ -266,9 +268,9 @@ let viewMonth  = today.getMonth();
 let timesCache = {};
 let todayTimes = {};
 
-// ── Storage helpers ──
 const dateKey  = d => 'prayers_'  + d.toDateString();
 const todayKey = () => dateKey(today);
+
 const loadDay  = k  => { try { const v = localStorage.getItem(k); if(!v) return {done:[],qadha:[]}; const p=JSON.parse(v); return {done:p.done||p||[],qadha:p.qadha||[]}; } catch{return{done:[],qadha:[]};} };
 const saveDay  = (k,v)=>{ try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
 const loadQ    = ()  => { try{return JSON.parse(localStorage.getItem('qadha')||'[]');}catch{return[];} };
@@ -277,39 +279,40 @@ const saveQ    = q   => { try{localStorage.setItem('qadha',JSON.stringify(q));}c
 let dayData = loadDay(todayKey());
 let qadha   = loadQ();
 
-// ── Automatic Location & Time Fetching ──
+// Get Location and Fetch Times
 async function fetchPrayerTimes(date) {
   const key = fmtDate(date);
   if (timesCache[key]) return timesCache[key];
 
   return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-      const m = date.getMonth()+1, d = date.getDate(), y = date.getFullYear();
-      const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${lat}&longitude=${lng}&method=1`;
-      try {
-        const res = await fetch(url);
-        const json = await res.json();
-        if (json.code === 200) {
-          timesCache[key] = json.data.timings;
-          resolve(timesCache[key]);
-        }
-      } catch(e) { resolve(null); }
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      currentLat = pos.coords.latitude;
+      currentLng = pos.coords.longitude;
+      const data = await callAladhan(date);
+      resolve(data);
     }, async () => {
-      // Fallback to Chennai if GPS is denied
-      const m = date.getMonth()+1, d = date.getDate(), y = date.getFullYear();
-      const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=13.0827&longitude=80.2707&method=1`;
-      const res = await fetch(url);
-      const json = await res.json();
-      resolve(json.data.timings);
+      // If user blocks location, use default Chennai
+      const data = await callAladhan(date);
+      resolve(data);
     });
   });
 }
 
-function fmtDate(d) {
-  return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+async function callAladhan(date) {
+  const m = date.getMonth()+1, d = date.getDate(), y = date.getFullYear();
+  // Method 1 = Karachi, School 1 = Hanafi
+  const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${currentLat}&longitude=${currentLng}&method=1&school=1`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    if (json.code === 200) {
+      timesCache[fmtDate(date)] = json.data.timings;
+      return json.data.timings;
+    }
+  } catch(e) { return null; }
 }
+
+function fmtDate(d) { return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 
 function parseTime(dateObj, timeStr) {
   const [h,m] = timeStr.split(':').map(Number);
@@ -328,17 +331,17 @@ function to12h(timeStr) {
 
 function buildTodayTimes(timings) {
   if (!timings) return;
-  prayers.forEach((p, index) => {
+  prayers.forEach((p, idx) => {
     const startStr = timings[p.apiKey];
-    const nextPrayer = prayers[index + 1];
-    // Next prayer start is this prayer's end. Isha ends at midnight.
-    const endStr = nextPrayer ? timings[nextPrayer.apiKey] : "23:59";
+    const nextP = prayers[idx+1];
+    // Next prayer is the end of current prayer, Isha ends at midnight
+    const endStr = nextP ? timings[nextP.apiKey] : "23:59";
     
-    todayTimes[p.id] = { 
-      start: parseTime(today, startStr), 
-      end: parseTime(today, endStr), 
-      startStr, 
-      endStr 
+    todayTimes[p.id] = {
+      start: parseTime(today, startStr),
+      end: parseTime(today, endStr),
+      startStr,
+      endStr
     };
   });
 }
@@ -402,14 +405,11 @@ function renderBanner() {
   });
 }
 
-function checkSvg() {
-  return `<svg width="10" height="8" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-}
+function checkSvg() { return `<svg width="10" height="8" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
 
 function render() {
   const list = document.getElementById('prayersList');
   list.innerHTML = '';
-
   const tl = document.createElement('div');
   tl.className = 'section-label'; tl.textContent = "Today's Prayers";
   list.appendChild(tl);
@@ -418,32 +418,28 @@ function render() {
     const isDone    = dayData.done.includes(p.id);
     const isQDone   = dayData.qadha.includes(p.id);
     const isAnyDone = isDone || isQDone;
-    const isActive  = !isAnyDone && todayTimes[p.id] && isWithinTime(p.id);
+    const t = todayTimes[p.id];
+    const isActive  = !isAnyDone && t && isWithinTime(p.id);
     const isPast    = !isAnyDone && isPrayerTimePast(p.id);
 
-    const t = todayTimes[p.id];
     const timeDisplay  = t ? to12h(t.startStr) : '<span class="time-loading">Loading...</span>';
-    const timeRange    = t ? `${to12h(t.startStr)} – ${to12h(t.endStr || '')}` : '';
+    const timeRange    = t ? `${to12h(t.startStr)} – ${to12h(t.endStr)}` : '';
 
     const item = document.createElement('div');
-    item.className = 'prayer-item' + (isAnyDone ? ' done' : '') + (isActive  ? ' active-prayer' : '');
-
+    item.className = 'prayer-item' + (isAnyDone ? ' done' : '') + (isActive ? ' active-prayer' : '');
     item.innerHTML = `
-      <div class="checkbox"><svg width="13" height="10" viewBox="0 0 13 10" fill="none">
-        <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg></div>
+      <div class="checkbox"><svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="prayer-info">
-        <div class="prayer-name">${p.name}${isQDone?'<span class="qadha-badge">Qadha</span>':''}</div>
+        <div class="prayer-name">${p.name}${isQDone?' <span class="qadha-badge">Qadha</span>':''}</div>
         <div class="prayer-arabic">${p.arabic}</div>
         <div class="prayer-time-display">${timeDisplay}</div>
-        ${timeRange ? `<div class="prayer-time-range">${timeRange}</div>` : ''}
+        <div class="prayer-time-range">${timeRange}</div>
       </div>
       <div style="text-align:right">
         <div class="rakaat-badge">${p.rakaat}</div>
         ${isActive ? '<div style="font-size:9px;color:var(--gold);margin-top:4px;font-weight:600">● NOW</div>' : ''}
         ${isPast && !isAnyDone ? '<div style="font-size:9px;color:var(--red);margin-top:4px;font-weight:600">MISSED</div>' : ''}
       </div>`;
-
     item.addEventListener('click', () => toggleToday(p.id, item));
     list.appendChild(item);
   });
@@ -451,45 +447,31 @@ function render() {
   const pendingQ = qadha.filter(q => !q.madeUp);
   if (pendingQ.length) {
     const ql = document.createElement('div');
-    ql.className = 'section-label';
-    ql.style.cssText = 'margin-top:10px;color:var(--orange)';
-    ql.textContent = 'Makeup Prayers (Qadha)';
+    ql.className = 'section-label'; ql.style.cssText = 'margin-top:10px;color:var(--orange)'; ql.textContent = 'Makeup Prayers (Qadha)';
     list.appendChild(ql);
-
     pendingQ.forEach(q => {
       const p = prayers.find(x => x.id === q.id);
-      const fromD   = new Date(q.fromDate);
+      const fromD = new Date(q.fromDate);
       const dayName = fromD.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
       const item = document.createElement('div');
       item.className = 'prayer-item qadha-item';
       item.innerHTML = `
-        <div class="checkbox"><svg width="13" height="10" viewBox="0 0 13 10" fill="none">
-          <path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg></div>
+        <div class="checkbox"><svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="prayer-info">
           <div class="prayer-name">${p.name} <span class="qadha-badge">Qadha</span></div>
           <div class="prayer-arabic">${p.arabic}</div>
           <div class="prayer-time-display" style="color:var(--orange)">Missed: ${dayName}</div>
         </div>
-        <div style="text-align:right">
-          <div class="rakaat-badge">${p.rakaat}</div>
-        </div>`;
-
+        <div style="text-align:right"><div class="rakaat-badge">${p.rakaat}</div></div>`;
       item.addEventListener('click', () => {
         item.classList.add('done','just-done');
-        setTimeout(()=>item.classList.remove('just-done'),400);
         setTimeout(()=>{
           const idx = qadha.findIndex(x => x.id===q.id && x.fromDate===q.fromDate && !x.madeUp);
           if (idx !== -1) qadha[idx].madeUp = true;
           const fromDData = loadDay(dateKey(fromD));
-          if (!fromDData.qadha.includes(q.id)) {
-            fromDData.qadha.push(q.id);
-            fromDData.done = fromDData.done.filter(x => x !== q.id);
-          }
+          if (!fromDData.qadha.includes(q.id)) fromDData.qadha.push(q.id);
           saveDay(dateKey(fromD), fromDData);
-          saveQ(qadha);
-          renderBanner();
-          render();
+          saveQ(qadha); renderBanner(); render();
         }, 700);
       });
       list.appendChild(item);
@@ -500,17 +482,15 @@ function render() {
 
 function toggleToday(id, el) {
   const inTime = isWithinTime(id);
-  const alreadyDone  = dayData.done.includes(id);
+  const alreadyDone = dayData.done.includes(id);
   const alreadyQadha = dayData.qadha.includes(id);
 
   if (alreadyDone || alreadyQadha) {
-    dayData.done  = dayData.done.filter(x => x !== id);
+    dayData.done = dayData.done.filter(x => x !== id);
     dayData.qadha = dayData.qadha.filter(x => x !== id);
-    el.classList.remove('done','just-done');
   } else {
-    if (inTime) {
-      dayData.done.push(id);
-    } else {
+    if (inTime) dayData.done.push(id);
+    else {
       dayData.qadha.push(id);
       const todayStr = today.toDateString();
       qadha = qadha.map(q => (q.id === id && q.fromDate === todayStr) ? {...q, madeUp:true} : q);
@@ -520,9 +500,7 @@ function toggleToday(id, el) {
     setTimeout(()=>el.classList.remove('just-done'),400);
   }
   saveDay(todayKey(), dayData);
-  updateProgress();
-  renderBanner();
-  render();
+  updateProgress(); renderBanner(); render();
 }
 
 function updateProgress() {
@@ -536,21 +514,21 @@ function updateProgress() {
 function getDaysInMonth(y,m) { return new Date(y, m+1, 0).getDate(); }
 
 function renderMonthly() {
-  const days     = getDaysInMonth(viewYear, viewMonth);
+  const days = getDaysInMonth(viewYear, viewMonth);
   const todayDay = (viewYear===today.getFullYear() && viewMonth===today.getMonth()) ? today.getDate() : -1;
   document.getElementById('monthName').textContent = MONTHS[viewMonth];
-  document.getElementById('monthNum').textContent  = 'Month ' + (viewMonth+1) + ' · ' + viewYear;
+  document.getElementById('monthNum').textContent = 'Month ' + (viewMonth+1) + ' · ' + viewYear;
 
   let totalDone = 0, totalPossible = 0;
-  const grid    = document.getElementById('prayerGrid');
+  const grid = document.getElementById('prayerGrid');
   const barWrap = document.getElementById('barChart');
   grid.innerHTML = ''; barWrap.innerHTML = '';
 
   for (let day = 1; day <= days; day++) {
     const d = new Date(viewYear, viewMonth, day);
     const isFuture = d > today;
-    const isToday  = day === todayDay;
-    let dData = isToday ? dayData : (isFuture ? {done:[],qadha:[]} : loadDay(dateKey(d)));
+    const isToday = day === todayDay;
+    const dData = isToday ? dayData : (isFuture ? {done:[],qadha:[]} : loadDay(dateKey(d)));
     const cnt = dData.done.length + dData.qadha.length;
     if (!isFuture) { totalDone += cnt; totalPossible += 5; }
 
@@ -563,40 +541,26 @@ function renderMonthly() {
 
     prayers.forEach(p => {
       const cell = document.createElement('div');
-      if (isFuture) {
-        cell.className = 'grid-cell future';
-      } else if (dData.done.includes(p.id)) {
-        cell.className = 'grid-cell done'; cell.innerHTML = checkSvg();
-      } else if (dData.qadha.includes(p.id)) {
-        cell.className = 'grid-cell qadha-done'; cell.innerHTML = checkSvg();
-      } else {
-        cell.className = 'grid-cell missed';
-        cell.innerHTML = `<svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 2L8 8M8 2L2 8" stroke="rgba(185,64,64,0.7)" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-      }
+      if (isFuture) cell.className = 'grid-cell future';
+      else if (dData.done.includes(p.id)) { cell.className = 'grid-cell done'; cell.innerHTML = checkSvg(); }
+      else if (dData.qadha.includes(p.id)) { cell.className = 'grid-cell qadha-done'; cell.innerHTML = checkSvg(); }
+      else { cell.className = 'grid-cell missed'; cell.innerHTML = `<svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 2L8 8M8 2L2 8" stroke="rgba(185,64,64,0.7)" stroke-width="1.8" stroke-linecap="round"/></svg>`; }
       row.appendChild(cell);
     });
     grid.appendChild(row);
 
-    const bw = document.createElement('div');
-    bw.className = 'bar-wrap';
+    const bw = document.createElement('div'); bw.className = 'bar-wrap';
     const b = document.createElement('div');
-    if (isFuture) {
-      b.className = 'bar future-bar'; b.style.height = '0%';
-    } else {
-      b.className = 'bar' + (cnt===0?' zero':'') + (isToday?' today-bar':'');
-      b.style.height = Math.max((cnt/5)*100, cnt===0?0:4) + '%';
-    }
-    const bl = document.createElement('div');
-    bl.className = 'bar-day-label';
-    bl.textContent = day < 10 ? '0'+day : day;
-    bw.appendChild(b); bw.appendChild(bl);
-    barWrap.appendChild(bw);
+    if (isFuture) { b.className = 'bar future-bar'; b.style.height = '0%'; }
+    else { b.className = 'bar' + (cnt===0?' zero':'') + (isToday?' today-bar':''); b.style.height = Math.max((cnt/5)*100, cnt===0?0:4) + '%'; }
+    const bl = document.createElement('div'); bl.className = 'bar-day-label'; bl.textContent = day < 10 ? '0'+day : day;
+    bw.appendChild(b); bw.appendChild(bl); barWrap.appendChild(bw);
   }
   const missed = totalPossible - totalDone;
-  const pct    = totalPossible > 0 ? Math.round(totalDone/totalPossible*100) : 0;
-  document.getElementById('statDone').textContent   = totalDone;
+  const pct = totalPossible > 0 ? Math.round(totalDone/totalPossible*100) : 0;
+  document.getElementById('statDone').textContent = totalDone;
   document.getElementById('statMissed').textContent = missed;
-  document.getElementById('statPct').textContent    = pct + '%';
+  document.getElementById('statPct').textContent = pct + '%';
 }
 
 function switchTab(tab) {
@@ -615,9 +579,7 @@ document.getElementById('dateText').textContent = today.toLocaleDateString('en-U
 (async () => {
   const timings = await fetchPrayerTimes(today);
   buildTodayTimes(timings);
-  checkMissed();
-  renderBanner();
-  render();
+  checkMissed(); renderBanner(); render();
   setInterval(()=>{ checkMissed(); renderBanner(); render(); }, 60000);
 })();
 </script>

@@ -203,14 +203,14 @@
     <div class="btn-row">
       <button class="btn btn-ghost" id="resetBtn">Reset Today</button>
     </div>
-  </div>
-
-  <div class="tab-panel" id="panel-monthly">
-    <div class="monthly-panel">
-      <div class="month-nav">
-        <button class="month-nav-btn" id="prevMonthBtn">&#8249;</button>
-        <div class="month-title">
-          <div class="month-title-name" id="monthName">May</div>
+    const prayers = [
+  { id:'fajr',    name:'Fajr',    arabic:'الفجر',  rakaat:'2 Rakaat', apiKey:'Fajr' },
+  { id:'dhuhr',   name:'Dhuhr',   arabic:'الظهر',  rakaat:'4 Rakaat', apiKey:'Dhuhr' },
+  { id:'asr',     name:'Asr',     arabic:'العصر',  rakaat:'4 Rakaat', apiKey:'Asr' },
+  { id:'maghrib', name:'Maghrib', arabic:'المغرب', rakaat:'3 Rakaat', apiKey:'Maghrib' },
+  { id:'isha',    name:'Isha',    arabic:'العشاء', rakaat:'4 Rakaat', apiKey:'Isha' },
+];       
+   <div class="month-title-name" id="monthName">May</div>
           <div class="month-title-num" id="monthNum">Month 5 · 2026</div>
         </div>
         <button class="month-nav-btn" id="nextMonthBtn">&#8250;</button>
@@ -228,44 +228,51 @@
         <div class="grid-header-cell">Asr</div>
         <div class="grid-header-cell">Mghrb</div>
         <div class="grid-header-cell">Isha</div>
-      </div>
-      <div class="prayer-grid" id="prayerGrid"></div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>On Time</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Qadha Done</div>
-        <div class="legend-item"><div class="legend-dot" style="background:rgba(185,64,64,0.3)"></div>Missed</div>
-        <div class="legend-item"><div class="legend-dot" style="border:1px dashed rgba(180,160,100,0.4)"></div>Upcoming</div>
-      </div>
-      <div class="bar-section">
-        <div class="grid-section-title" style="margin-top:18px">Daily Count Chart</div>
-        <div class="bar-chart" id="barChart"></div>
-        <div class="bar-axis"><span>0 prayers</span><span>5 prayers</span></div>
-      </div>
-    </div>
-  </div>
+ // Automatically get user location or fallback to Chennai
+async function fetchPrayerTimes(date) {
+  const key = fmtDate(date);
+  if (timesCache[key]) return timesCache[key];
 
-  <div class="footer">الصلاة خير من النوم</div>
-</div>
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const m = date.getMonth()+1, d = date.getDate(), y = date.getFullYear();
+      // Method 1 is Karachi/Hanafi, update 'method=1' if you prefer another school
+      const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${lat}&longitude=${lng}&method=1`;
+      try {
+        const res = await fetch(url);
+        const json = await res.json();
+        if (json.code === 200) {
+          timesCache[key] = json.data.timings;
+          resolve(timesCache[key]);
+        }
+      } catch(e) { resolve(null); }
+    }, async () => {
+      // Fallback to Chennai if user denies GPS
+      const url = `https://api.aladhan.com/v1/timings/${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}?latitude=13.0827&longitude=80.2707&method=1`;
+      const res = await fetch(url);
+      const json = await res.json();
+      resolve(json.data.timings);
+    });
+  });
+}
 
-<script>
-// ── Prayer definitions (times fetched from API for Chennai lat/lng) ──
-const PRAYER_IDS = ['fajr','dhuhr','asr','maghrib','isha'];
-const prayers = [
-  { id:'fajr',    name:'Fajr',    arabic:'الفجر',  rakaat:'2 Rakaat', apiKey:'Fajr',    nextKey:'Dhuhr'   },
-  { id:'dhuhr',   name:'Dhuhr',   arabic:'الظهر',  rakaat:'4 Rakaat', apiKey:'Dhuhr',   nextKey:'Asr'     },
-  { id:'asr',     name:'Asr',     arabic:'العصر',  rakaat:'4 Rakaat', apiKey:'Asr',     nextKey:'Maghrib' },
-  { id:'maghrib', name:'Maghrib', arabic:'المغرب', rakaat:'3 Rakaat', apiKey:'Maghrib', nextKey:'Isha'    },
-  { id:'isha',    name:'Isha',    arabic:'العشاء', rakaat:'4 Rakaat', apiKey:'Isha',    nextKey:'Fajr'    },
-];
-
-// Chennai coordinates
-const LAT = 13.0827, LNG = 80.2707;
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-const today    = new Date();
-let viewYear   = today.getFullYear();
-let viewMonth  = today.getMonth();
-
+function buildTodayTimes(timings) {
+  if (!timings) return;
+  prayers.forEach((p, index) => {
+    const startStr = timings[p.apiKey];
+    const nextPrayer = prayers[index + 1];
+    const endStr = nextPrayer ? timings[nextPrayer.apiKey] : "23:59";
+    
+    todayTimes[p.id] = { 
+      start: parseTime(today, startStr), 
+      end: parseTime(today, endStr), 
+      startStr, 
+      endStr 
+    };
+  });
+}     
 // Prayer times cache: { 'YYYY-MM-DD': { Fajr:'05:10', Dhuhr:'12:18', ... } }
 let timesCache = {};
 // Today's parsed times: { fajr: {start: Date, end: Date}, ... }

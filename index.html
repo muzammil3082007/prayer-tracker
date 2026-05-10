@@ -203,14 +203,14 @@
     <div class="btn-row">
       <button class="btn btn-ghost" id="resetBtn">Reset Today</button>
     </div>
-    const prayers = [
-  { id:'fajr',    name:'Fajr',    arabic:'الفجر',  rakaat:'2 Rakaat', apiKey:'Fajr' },
-  { id:'dhuhr',   name:'Dhuhr',   arabic:'الظهر',  rakaat:'4 Rakaat', apiKey:'Dhuhr' },
-  { id:'asr',     name:'Asr',     arabic:'العصر',  rakaat:'4 Rakaat', apiKey:'Asr' },
-  { id:'maghrib', name:'Maghrib', arabic:'المغرب', rakaat:'3 Rakaat', apiKey:'Maghrib' },
-  { id:'isha',    name:'Isha',    arabic:'العشاء', rakaat:'4 Rakaat', apiKey:'Isha' },
-];       
-   <div class="month-title-name" id="monthName">May</div>
+  </div>
+
+  <div class="tab-panel" id="panel-monthly">
+    <div class="monthly-panel">
+      <div class="month-nav">
+        <button class="month-nav-btn" id="prevMonthBtn">&#8249;</button>
+        <div class="month-title">
+          <div class="month-title-name" id="monthName">May</div>
           <div class="month-title-num" id="monthNum">Month 5 · 2026</div>
         </div>
         <button class="month-nav-btn" id="nextMonthBtn">&#8250;</button>
@@ -228,7 +228,56 @@
         <div class="grid-header-cell">Asr</div>
         <div class="grid-header-cell">Mghrb</div>
         <div class="grid-header-cell">Isha</div>
- // Automatically get user location or fallback to Chennai
+      </div>
+      <div class="prayer-grid" id="prayerGrid"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>On Time</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Qadha Done</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(185,64,64,0.3)"></div>Missed</div>
+        <div class="legend-item"><div class="legend-dot" style="border:1px dashed rgba(180,160,100,0.4)"></div>Upcoming</div>
+      </div>
+      <div class="bar-section">
+        <div class="grid-section-title" style="margin-top:18px">Daily Count Chart</div>
+        <div class="bar-chart" id="barChart"></div>
+        <div class="bar-axis"><span>0 prayers</span><span>5 prayers</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">الصلاة خير من النوم</div>
+</div>
+
+<script>
+// ── Prayer definitions ──
+const PRAYER_IDS = ['fajr','dhuhr','asr','maghrib','isha'];
+const prayers = [
+  { id:'fajr',    name:'Fajr',    arabic:'الفجر',  rakaat:'2 Rakaat', apiKey:'Fajr' },
+  { id:'dhuhr',   name:'Dhuhr',   arabic:'الظهر',  rakaat:'4 Rakaat', apiKey:'Dhuhr' },
+  { id:'asr',     name:'Asr',     arabic:'العصر',  rakaat:'4 Rakaat', apiKey:'Asr' },
+  { id:'maghrib', name:'Maghrib', arabic:'المغرب', rakaat:'3 Rakaat', apiKey:'Maghrib' },
+  { id:'isha',    name:'Isha',    arabic:'العشاء', rakaat:'4 Rakaat', apiKey:'Isha' },
+];
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const today    = new Date();
+let viewYear   = today.getFullYear();
+let viewMonth  = today.getMonth();
+
+let timesCache = {};
+let todayTimes = {};
+
+// ── Storage helpers ──
+const dateKey  = d => 'prayers_'  + d.toDateString();
+const todayKey = () => dateKey(today);
+const loadDay  = k  => { try { const v = localStorage.getItem(k); if(!v) return {done:[],qadha:[]}; const p=JSON.parse(v); return {done:p.done||p||[],qadha:p.qadha||[]}; } catch{return{done:[],qadha:[]};} };
+const saveDay  = (k,v)=>{ try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
+const loadQ    = ()  => { try{return JSON.parse(localStorage.getItem('qadha')||'[]');}catch{return[];} };
+const saveQ    = q   => { try{localStorage.setItem('qadha',JSON.stringify(q));}catch{} };
+
+let dayData = loadDay(todayKey());
+let qadha   = loadQ();
+
+// ── Automatic Location & Time Fetching ──
 async function fetchPrayerTimes(date) {
   const key = fmtDate(date);
   if (timesCache[key]) return timesCache[key];
@@ -238,7 +287,6 @@ async function fetchPrayerTimes(date) {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
       const m = date.getMonth()+1, d = date.getDate(), y = date.getFullYear();
-      // Method 1 is Karachi/Hanafi, update 'method=1' if you prefer another school
       const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${lat}&longitude=${lng}&method=1`;
       try {
         const res = await fetch(url);
@@ -249,8 +297,9 @@ async function fetchPrayerTimes(date) {
         }
       } catch(e) { resolve(null); }
     }, async () => {
-      // Fallback to Chennai if user denies GPS
-      const url = `https://api.aladhan.com/v1/timings/${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}?latitude=13.0827&longitude=80.2707&method=1`;
+      // Fallback to Chennai if GPS is denied
+      const m = date.getMonth()+1, d = date.getDate(), y = date.getFullYear();
+      const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=13.0827&longitude=80.2707&method=1`;
       const res = await fetch(url);
       const json = await res.json();
       resolve(json.data.timings);
@@ -258,11 +307,31 @@ async function fetchPrayerTimes(date) {
   });
 }
 
+function fmtDate(d) {
+  return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+}
+
+function parseTime(dateObj, timeStr) {
+  const [h,m] = timeStr.split(':').map(Number);
+  const dt = new Date(dateObj);
+  dt.setHours(h, m, 0, 0);
+  return dt;
+}
+
+function to12h(timeStr) {
+  if (!timeStr) return '';
+  const [h,m] = timeStr.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12  = h % 12 || 12;
+  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
+}
+
 function buildTodayTimes(timings) {
   if (!timings) return;
   prayers.forEach((p, index) => {
     const startStr = timings[p.apiKey];
     const nextPrayer = prayers[index + 1];
+    // Next prayer start is this prayer's end. Isha ends at midnight.
     const endStr = nextPrayer ? timings[nextPrayer.apiKey] : "23:59";
     
     todayTimes[p.id] = { 
@@ -272,92 +341,15 @@ function buildTodayTimes(timings) {
       endStr 
     };
   });
-}     
-// Prayer times cache: { 'YYYY-MM-DD': { Fajr:'05:10', Dhuhr:'12:18', ... } }
-let timesCache = {};
-// Today's parsed times: { fajr: {start: Date, end: Date}, ... }
-let todayTimes = {};
-
-// ── Storage helpers ──
-const dateKey  = d => 'prayers_'  + d.toDateString();
-const todayKey = () => dateKey(today);
-// Each day stores: { done: [], qadha: [] }
-// done  = prayer ids completed ON TIME
-// qadha = prayer ids completed as qadha (late makeup)
-const loadDay  = k  => { try { const v = localStorage.getItem(k); if(!v) return {done:[],qadha:[]}; const p=JSON.parse(v); return {done:p.done||p||[],qadha:p.qadha||[]}; } catch{return{done:[],qadha:[]};} };
-const saveDay  = (k,v)=>{ try{localStorage.setItem(k,JSON.stringify(v));}catch{} };
-const loadQ    = ()  => { try{return JSON.parse(localStorage.getItem('qadha')||'[]');}catch{return[];} };
-const saveQ    = q   => { try{localStorage.setItem('qadha',JSON.stringify(q));}catch{} };
-
-let dayData = loadDay(todayKey());
-let qadha   = loadQ();
-
-// ── Fetch prayer times from Aladhan API ──
-async function fetchPrayerTimes(date) {
-  const key = fmtDate(date);
-  if (timesCache[key]) return timesCache[key];
-  try {
-    const m = date.getMonth()+1, d = date.getDate(), y = date.getFullYear();
-    const url = `https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${LAT}&longitude=${LNG}&method=1`;
-    const res = await fetch(url);
-    const json = await res.json();
-    if (json.code === 200) {
-      timesCache[key] = json.data.timings;
-      return timesCache[key];
-    }
-  } catch(e) {}
-  return null;
 }
 
-function fmtDate(d) {
-  return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
-}
-
-// Parse "HH:MM" (24h) into a Date object for a given date
-function parseTime(dateObj, timeStr) {
-  const [h,m] = timeStr.split(':').map(Number);
-  const dt = new Date(dateObj);
-  dt.setHours(h, m, 0, 0);
-  return dt;
-}
-
-// Convert "HH:MM" 24h to 12h format
-function to12h(timeStr) {
-  if (!timeStr) return '';
-  const [h,m] = timeStr.split(':').map(Number);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  const h12  = h % 12 || 12;
-  return h12 + ':' + String(m).padStart(2,'0') + ' ' + ampm;
-}
-
-// Build todayTimes: for each prayer, start = prayer time, end = next prayer time
-function buildTodayTimes(timings) {
-  if (!timings) return;
-  prayers.forEach(p => {
-    const startStr = timings[p.apiKey];
-    const endStr   = timings[p.nextKey];
-    if (!startStr) return;
-    const start = parseTime(today, startStr);
-    let end;
-    if (p.id === 'isha') {
-      // Isha ends at midnight
-      end = new Date(today); end.setHours(23,59,59,999);
-    } else {
-      end = parseTime(today, endStr);
-    }
-    todayTimes[p.id] = { start, end, startStr, endStr };
-  });
-}
-
-// Is it currently within this prayer's valid time window?
 function isWithinTime(prayerId) {
   const t = todayTimes[prayerId];
-  if (!t) return true; // fallback: allow if times not loaded
+  if (!t) return false;
   const now = new Date();
   return now >= t.start && now <= t.end;
 }
 
-// Has this prayer's time window PASSED (i.e. missed)?
 function isPrayerTimePast(prayerId) {
   const t = todayTimes[prayerId];
   if (!t) return false;
@@ -365,8 +357,6 @@ function isPrayerTimePast(prayerId) {
   return now > t.end;
 }
 
-// ── Check previous days for missed prayers ──
-// Only flags a prayer as qadha if: the day's time window has passed AND prayer wasn't done
 function checkMissed() {
   for (let i = 1; i <= 3; i++) {
     const d = new Date(today);
@@ -377,12 +367,10 @@ function checkMissed() {
     prayers.forEach(p => {
       const alreadyQ = qadha.some(q => q.id === p.id && q.fromDate === dStr);
       if (!allDone.includes(p.id) && !alreadyQ) {
-        // Past day — all prayer times have passed
         qadha.push({ id: p.id, fromDate: dStr, madeUp: false });
       }
     });
   }
-  // Also check today: prayers whose window has PASSED and weren't done
   const allDoneToday = [...dayData.done, ...dayData.qadha];
   prayers.forEach(p => {
     if (isPrayerTimePast(p.id) && !allDoneToday.includes(p.id)) {
@@ -418,7 +406,6 @@ function checkSvg() {
   return `<svg width="10" height="8" viewBox="0 0 13 10" fill="none"><path d="M1.5 5L5 8.5L11.5 1.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 
-// ── Render today's prayer list ──
 function render() {
   const list = document.getElementById('prayersList');
   list.innerHTML = '';
@@ -439,9 +426,7 @@ function render() {
     const timeRange    = t ? `${to12h(t.startStr)} – ${to12h(t.endStr || '')}` : '';
 
     const item = document.createElement('div');
-    item.className = 'prayer-item' +
-      (isAnyDone ? ' done' : '') +
-      (isActive  ? ' active-prayer' : '');
+    item.className = 'prayer-item' + (isAnyDone ? ' done' : '') + (isActive  ? ' active-prayer' : '');
 
     item.innerHTML = `
       <div class="checkbox"><svg width="13" height="10" viewBox="0 0 13 10" fill="none">
@@ -463,7 +448,6 @@ function render() {
     list.appendChild(item);
   });
 
-  // Qadha section
   const pendingQ = qadha.filter(q => !q.madeUp);
   if (pendingQ.length) {
     const ql = document.createElement('div');
@@ -495,19 +479,14 @@ function render() {
         item.classList.add('done','just-done');
         setTimeout(()=>item.classList.remove('just-done'),400);
         setTimeout(()=>{
-          // Mark this specific qadha entry as made up
           const idx = qadha.findIndex(x => x.id===q.id && x.fromDate===q.fromDate && !x.madeUp);
           if (idx !== -1) qadha[idx].madeUp = true;
-
-          // ── FIX 1: Also update the day's storage so monthly grid shows qadha-done ──
           const fromDData = loadDay(dateKey(fromD));
           if (!fromDData.qadha.includes(q.id)) {
             fromDData.qadha.push(q.id);
-            // Remove from missed list if it was there
             fromDData.done = fromDData.done.filter(x => x !== q.id);
           }
           saveDay(dateKey(fromD), fromDData);
-
           saveQ(qadha);
           renderBanner();
           render();
@@ -516,7 +495,6 @@ function render() {
       list.appendChild(item);
     });
   }
-
   updateProgress();
 }
 
@@ -526,22 +504,16 @@ function toggleToday(id, el) {
   const alreadyQadha = dayData.qadha.includes(id);
 
   if (alreadyDone || alreadyQadha) {
-    // Uncheck
     dayData.done  = dayData.done.filter(x => x !== id);
     dayData.qadha = dayData.qadha.filter(x => x !== id);
     el.classList.remove('done','just-done');
   } else {
-    // Check — decide if on-time or qadha
     if (inTime) {
       dayData.done.push(id);
     } else {
-      // After prayer time — mark as qadha in today's data
       dayData.qadha.push(id);
-      // Also remove from pending qadha list for today if it was there
       const todayStr = today.toDateString();
-      qadha = qadha.map(q =>
-        (q.id === id && q.fromDate === todayStr) ? {...q, madeUp:true} : q
-      );
+      qadha = qadha.map(q => (q.id === id && q.fromDate === todayStr) ? {...q, madeUp:true} : q);
       saveQ(qadha);
     }
     el.classList.add('done','just-done');
@@ -561,13 +533,11 @@ function updateProgress() {
   if (total === 5) msg.classList.add('visible'); else msg.classList.remove('visible');
 }
 
-// ── MONTHLY VIEW ──
 function getDaysInMonth(y,m) { return new Date(y, m+1, 0).getDate(); }
 
 function renderMonthly() {
   const days     = getDaysInMonth(viewYear, viewMonth);
   const todayDay = (viewYear===today.getFullYear() && viewMonth===today.getMonth()) ? today.getDate() : -1;
-
   document.getElementById('monthName').textContent = MONTHS[viewMonth];
   document.getElementById('monthNum').textContent  = 'Month ' + (viewMonth+1) + ' · ' + viewYear;
 
@@ -580,21 +550,10 @@ function renderMonthly() {
     const d = new Date(viewYear, viewMonth, day);
     const isFuture = d > today;
     const isToday  = day === todayDay;
-
-    // ── FIX 1: Load day data with both done and qadha ──
-    let dData;
-    if (isToday) {
-      dData = dayData;
-    } else if (isFuture) {
-      dData = { done:[], qadha:[] };
-    } else {
-      dData = loadDay(dateKey(d));
-    }
-
+    let dData = isToday ? dayData : (isFuture ? {done:[],qadha:[]} : loadDay(dateKey(d)));
     const cnt = dData.done.length + dData.qadha.length;
     if (!isFuture) { totalDone += cnt; totalPossible += 5; }
 
-    // Grid row
     const row = document.createElement('div');
     row.className = 'grid-row' + (isToday ? ' today-row' : '');
     const dl = document.createElement('div');
@@ -607,15 +566,10 @@ function renderMonthly() {
       if (isFuture) {
         cell.className = 'grid-cell future';
       } else if (dData.done.includes(p.id)) {
-        // On-time prayer — green
-        cell.className = 'grid-cell done';
-        cell.innerHTML = checkSvg();
+        cell.className = 'grid-cell done'; cell.innerHTML = checkSvg();
       } else if (dData.qadha.includes(p.id)) {
-        // Qadha done — orange
-        cell.className = 'grid-cell qadha-done';
-        cell.innerHTML = checkSvg();
+        cell.className = 'grid-cell qadha-done'; cell.innerHTML = checkSvg();
       } else {
-        // Missed
         cell.className = 'grid-cell missed';
         cell.innerHTML = `<svg width="8" height="8" viewBox="0 0 10 10" fill="none"><path d="M2 2L8 8M8 2L2 8" stroke="rgba(185,64,64,0.7)" stroke-width="1.8" stroke-linecap="round"/></svg>`;
       }
@@ -623,7 +577,6 @@ function renderMonthly() {
     });
     grid.appendChild(row);
 
-    // Bar chart
     const bw = document.createElement('div');
     bw.className = 'bar-wrap';
     const b = document.createElement('div');
@@ -639,20 +592,11 @@ function renderMonthly() {
     bw.appendChild(b); bw.appendChild(bl);
     barWrap.appendChild(bw);
   }
-
   const missed = totalPossible - totalDone;
   const pct    = totalPossible > 0 ? Math.round(totalDone/totalPossible*100) : 0;
   document.getElementById('statDone').textContent   = totalDone;
   document.getElementById('statMissed').textContent = missed;
   document.getElementById('statPct').textContent    = pct + '%';
-
-  // Scroll to today
-  if (todayDay > 0) {
-    setTimeout(()=>{
-      const rows = grid.querySelectorAll('.grid-row');
-      if (rows[todayDay-1]) rows[todayDay-1].scrollIntoView({ block:'center', behavior:'smooth' });
-    }, 120);
-  }
 }
 
 function switchTab(tab) {
@@ -662,29 +606,18 @@ function switchTab(tab) {
   if (tab === 'monthly') renderMonthly();
 }
 
-document.getElementById('prevMonthBtn').addEventListener('click', ()=>{
-  viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderMonthly();
-});
-document.getElementById('nextMonthBtn').addEventListener('click', ()=>{
-  viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderMonthly();
-});
-document.getElementById('resetBtn').addEventListener('click', ()=>{
-  dayData={done:[],qadha:[]}; saveDay(todayKey(),dayData); render();
-});
+document.getElementById('prevMonthBtn').addEventListener('click', ()=>{ viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} renderMonthly(); });
+document.getElementById('nextMonthBtn').addEventListener('click', ()=>{ viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} renderMonthly(); });
+document.getElementById('resetBtn').addEventListener('click', ()=>{ dayData={done:[],qadha:[]}; saveDay(todayKey(),dayData); render(); });
 
-// Set date text
-document.getElementById('dateText').textContent =
-  today.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+document.getElementById('dateText').textContent = today.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-// ── Init: fetch today's prayer times, then start ──
 (async () => {
   const timings = await fetchPrayerTimes(today);
   buildTodayTimes(timings);
   checkMissed();
   renderBanner();
   render();
-
-  // Refresh every minute to update active prayer highlight
   setInterval(()=>{ checkMissed(); renderBanner(); render(); }, 60000);
 })();
 </script>

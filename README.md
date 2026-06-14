@@ -1,1 +1,1 @@
-# Prayer-Tracker
+# prayer-tracker
